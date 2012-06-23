@@ -36,7 +36,7 @@ public class Board{
     File f = null;
     Scanner scan = null;
      try{
-      f = new File("dictionary/ntuples.txt");
+      f = new File("dictionary/3tuplesOn5.txt");
       scan = new Scanner(f);
     }
     catch(Exception e){
@@ -273,6 +273,13 @@ public class Board{
         }else if (c!='a' && c!='i' && c!='e' && c!='o'){
             c = getRandomChar();
         }
+        if (c=='x' || c=='y' || c == 'q'
+                || c == 'z' || c =='z' || c =='p'
+                || c=='v' || c =='w' || c=='c'){
+                c = getRandomChar();
+            }else if (c!='a' && c!='i' && c!='e' && c!='o'){
+                c = getRandomChar();
+            }
 
         // from here
         /*
@@ -282,19 +289,36 @@ public class Board{
          c='n';}
         // to here
         */
-        
+        c = 'a';
         letters[i][j] = c;
         points[i][j] = pointsOf(c);  
       }
     }
     letters[0][0] = 'h';
     letters[0][1] = 'a';
-    letters[0][2] = 'u';
+    letters[0][2] = 'x';
     letters[0][3] = 's';
     letters[1][0] = 'm';
     letters[1][1] = 'r';
     letters[1][2] = 'n';
-    letters[2][3] = 'd';
+    letters[1][3] = 'u';
+    letters[2][0] = 'f';
+    letters[2][1] = 'i';
+    letters[2][2] = 's';
+    letters[2][3] = 'c';
+    letters[3][0] = 'd';
+    letters[3][1] = 'e';
+    letters[3][2] = 'n';
+    letters[3][3] = 'h';
+    letters[1][4] = 'c';
+    letters[2][4] = 'h';
+    letters[3][4] = 'e';
+    letters[4][4] = 'n';
+    letters[4][3] = 'd';
+    letters[4][2] = 'e';
+    letters[4][1] = 'r';
+    
+    		
     initialized = true;
 
   }

@@ -15,17 +15,17 @@ using namespace std;
 
 int main (void) {
 
-  Dictionary D("dictionary/dictionary.txt");
+  Dictionary D("/home/thomas/workspace/leWords/dictionary/dictionary.txt");
 
   Hypercube H;
 
   H.initialize(D.dictionary,D.length);
-  H.writeHypercube("dictionary/hypercube.txt");
+  H.writeHypercube("hypercube.txt");
 
-  int gridsize = 4;
+  int gridsize = 5;
   int recursionDepth = 3;
   H.estimateNTuples(gridsize,recursionDepth);
-  H.writeNTuples("dictionary/ntuples.txt",gridsize,recursionDepth);
+  H.writeNTuples("5tuples.txt",gridsize,recursionDepth);
 
 
   cout << "...done\n";

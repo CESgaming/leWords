@@ -69,14 +69,18 @@ public class leWords extends BasicGame {
       h = new Hypercube();
       d = new Dictionary();
       h.fillHypercube();
-   /*   d.fillCompleteDictionary();
+      d.fillCompleteDictionary();
       b.fillBoard();
       b.filterLevelOne(d,h);
       b.filterLevelTwo();
-*/
+      //b.boardDictionary.printDictionary();
+      System.out.println(b.boardDictionary.length);
+      
+      b.printBoard();
+      h.printHypercube();
 
 
-
+      
     	openConnection();
         loadTextures();
         InitField();
@@ -142,7 +146,7 @@ public class leWords extends BasicGame {
     		selection.clear();
     		//client.right = output;
     		//out.println(output);
-     //   score+= b.checkWord(output);
+        score+= b.checkWord(output);
         
 
         
@@ -186,8 +190,8 @@ public class leWords extends BasicGame {
     		
     	}
     	}
-    	ttFont.drawString(100, 600, output);
-    	ttFont.drawString(100,700,String.valueOf(score));
+    	ttFont.drawString(100, 400, output);
+    	ttFont.drawString(100,450,String.valueOf(score));
     	
     }
     
@@ -260,7 +264,7 @@ public class leWords extends BasicGame {
     	
         try {
             AppGameContainer app = new AppGameContainer(new leWords());
-            app.setDisplayMode(500,800,false);
+            app.setDisplayMode(500,500,false);
             app.start();
         } catch (SlickException e) {
             e.printStackTrace();
