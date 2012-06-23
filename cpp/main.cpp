@@ -25,7 +25,7 @@ int main (void) {
   int gridsize = 5;
   int recursionDepth = 3;
   H.estimateNTuples(gridsize,recursionDepth);
-  H.writeNTuples("5tuples.txt",gridsize,recursionDepth);
+  H.writeNTuples("../dictionary/3tuplesOn5.txt",gridsize,recursionDepth);
 
 
   cout << "...done\n";

@@ -8,6 +8,7 @@ public class Board{
   public int [][] points;
   public Dictionary boardDictionary;
   public boolean initialized= false;
+  
 
 
   public Board(int d){
@@ -100,7 +101,7 @@ public class Board{
           if (b[k][l][m]){ // prefix exists in board
             if (h.from[k][l][m]>=0){ // prefix exist in dictionary
               for (int p=h.from[k][l][m] ;p<=h.to[k][l][m];p++){
-                S[pos] = full.dictionary[p];
+                S[pos] = full.dictionary[p-2];
                 pos ++;
               }
             }
@@ -294,11 +295,13 @@ public class Board{
         points[i][j] = pointsOf(c);  
       }
     }
-    letters[0][0] = 'h';
+    letters[0][0] = 'a';
     letters[0][1] = 'a';
-    letters[0][2] = 'x';
-    letters[0][3] = 's';
-    letters[1][0] = 'm';
+    letters[0][2] = 'c';
+    letters[0][3] = 'h';
+    letters[0][4] = 'e';
+    letters[1][4] = 'n';
+    letters[1][0] = 'l';
     letters[1][1] = 'r';
     letters[1][2] = 'n';
     letters[1][3] = 'u';
@@ -445,13 +448,25 @@ public class Board{
   //    System.out.println(boardDictionary.dictionary[i] );
       if (boardDictionary.dictionary[i].equalsIgnoreCase(S)){
      // if( boardDictionary.dictionary[i] == S){
-        p = 1 ; // TODO calc points correctly!
+        p = calcWordPoints(boardDictionary.dictionary[i]); ; // TODO calc points correctly!
         found = true;
       }
     }
   
   
     return p;
+  }
+  
+  public int calcWordPoints(String S){
+	  int p  =0 ;
+	  char[] c = S.toCharArray();
+	  for (int i=0;i<c.length;i++){
+		  p+=pointsOf(c[i]);
+		  
+	  }
+	  return p;
+	  
+	  
   }
 
 }
