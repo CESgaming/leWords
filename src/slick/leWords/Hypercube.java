@@ -25,6 +25,7 @@ public void fillHypercube(){
     scan = new Scanner(f);
   }
   catch(Exception e){
+	  System.out.println("asdasdasd");
     System.exit(0);
   }
 

@@ -69,11 +69,11 @@ public class leWords extends BasicGame {
       h = new Hypercube();
       d = new Dictionary();
       h.fillHypercube();
-      d.fillCompleteDictionary();
+   /*   d.fillCompleteDictionary();
       b.fillBoard();
       b.filterLevelOne(d,h);
       b.filterLevelTwo();
-
+*/
 
 
 
@@ -142,7 +142,7 @@ public class leWords extends BasicGame {
     		selection.clear();
     		//client.right = output;
     		//out.println(output);
-        score+= b.checkWord(output);
+     //   score+= b.checkWord(output);
         
 
         

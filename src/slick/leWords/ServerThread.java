@@ -5,7 +5,7 @@ import java.io.*;
 
 public class ServerThread extends Thread {
 	private Socket socket = null;
-
+ 
 	public String word;
 	public int score;
 	
