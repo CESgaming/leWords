@@ -48,8 +48,8 @@ public class leWords extends BasicGame {
 	String[] usedWords ; 
 	int numberUsedWords;
 	boolean lastWordExisted;
-	
-	
+
+
 	public leWords() {
 		super("leWords");
 	}
@@ -156,18 +156,18 @@ public class leWords extends BasicGame {
 					alreadyUsed = true;
 					break;
 				}
-				
+
 			}
 			if (!alreadyUsed) {
 				score+= b.checkWord(output);
 				usedWords[numberUsedWords] = output;
 				numberUsedWords++;
 				lastWordExisted = false;
-				
+
 			}else{
 				lastWordExisted = true;
 			}
-			
+
 
 
 
@@ -211,12 +211,24 @@ public class leWords extends BasicGame {
 
 			}
 		}
-		ttFont.drawString(100, 400, output);
+
 		if (!lastWordExisted){
-			ttFont.drawString(100,450,String.valueOf(score));
+			if (!output.equalsIgnoreCase("")){
+		
+				ttFont.drawString(100, 500,    b.calcWordPoints(output)+" Punkte für: "+output);
+				ttFont.drawString(100,550,String.valueOf(score)+" Punkte");
+			}else{
+				ttFont.drawString(100,550,String.valueOf(score)+ " Punkte");
+			}
 		}else{
-			ttFont.drawString(100,400,"hattest du schon =)");
-			ttFont.drawString(100,450,String.valueOf(score));
+			ttFont.drawString(100, 500, output);
+			ttFont.drawString(100,500,"hattest du schon =)");
+			
+			ttFont.drawString(100,550,String.valueOf(score));
+			if  (!output.equalsIgnoreCase("")){
+				lastWordExisted = false;
+				
+			}
 		}
 
 	}
@@ -290,7 +302,7 @@ public class leWords extends BasicGame {
 
 		try {
 			AppGameContainer app = new AppGameContainer(new leWords());
-			app.setDisplayMode(500,500,false);
+			app.setDisplayMode(600,600,false);
 			app.start();
 		} catch (SlickException e) {
 			e.printStackTrace();
