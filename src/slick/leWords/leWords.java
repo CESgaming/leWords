@@ -43,7 +43,7 @@ public class leWords extends BasicGame {
 	int score;
 	ClientThread client;
 	Board b;
-	Hypercube h;
+	Hypercube h; //TODO uncomment these 3
 	Dictionary d;
 	String[] usedWords ; 
 	int numberUsedWords;
@@ -307,5 +307,11 @@ public class leWords extends BasicGame {
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
+			
+
+
+
+		System.out.println("...done");
+		
 	}
 }
