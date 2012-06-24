@@ -210,7 +210,7 @@ public class leWords extends BasicGame {
 		//Draw Fields
 		//Adjust fadeTimer
 		if(fadeTimer >0)
-			fadeTimer -=0.001;
+			fadeTimer -=0.01;
 		else
 			latestWord.clear();
 
@@ -220,12 +220,12 @@ public class leWords extends BasicGame {
 			{
 				//Draw all the background tiles
 				field_blank.draw(field[i][j].x, field[i][j].y);
-				ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);	
+				ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c).toUpperCase(), Color.black);	
 
 				if(field[i][j].selected == true)
 				{
 					field_blank_selected.draw(field[i][j].x, field[i][j].y);
-					ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);
+					ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c).toUpperCase(), Color.black);
 
 				}
 				else if(fadeTimer > 0 && latestWord.contains(field[i][j]) )
@@ -245,7 +245,7 @@ public class leWords extends BasicGame {
 						field_blank_known.draw(field[i][j].x, field[i][j].y);
 						break;
 					}
-					ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);
+					ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c).toUpperCase(), Color.black);
 
 				}
 				//else
@@ -264,7 +264,7 @@ public class leWords extends BasicGame {
 		if (output!="" ){
 			if (!alreadyIn){
 				ttFont.drawString(100, 500, "Du wählst:", Color.black);
-				ttFont.drawString(300, 500, output, Color.black);
+				ttFont.drawString(300, 500, output.toUpperCase(), Color.black);
 				ttFont.drawString(100, 550, "für "+ calcWordPoints(output)+ " Punkte.", Color.black);
 			}
 		}
@@ -277,10 +277,22 @@ public class leWords extends BasicGame {
 
 		
 
-
+	
 		ttFont.drawString(100,00,"Punkte: "+String.valueOf(score), Color.black);
 		ttFont.drawString(450,00,"Anzahl Spieler: "+String.valueOf(client.players), Color.black);
 
+		// Edit thomas here: display your 10 last words;
+		int to = 10;
+		if (history.size()<10){
+			to = history.size();
+		}
+		for (int i=0;i<to;i++){
+			// display last 5 words;
+			int pos = history.size()-1-i;
+			
+			ttFont.drawString(450,100+i*50,"#"+(history.size()-i) +": "+history.get(pos).toUpperCase() , Color.black);
+			
+		}
 	}
 
 	public void InitField()
