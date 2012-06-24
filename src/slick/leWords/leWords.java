@@ -353,6 +353,7 @@ public class leWords extends BasicGame {
         }
     }
     
+    /*
     public int checkWord(String word)
     {
     	for(int i =0; i < dict.length; i++)
@@ -364,7 +365,7 @@ public class leWords extends BasicGame {
     	}
 		return 0;
     	
-    }
+    }*/
     public static void loadTextures()
      throws SlickException
     {
@@ -389,4 +390,89 @@ public class leWords extends BasicGame {
             e.printStackTrace();
         }
     }
+    
+	public int pointsOf(char c){
+		// this is heuristic
+		// see http://de.wikipedia.org/wiki/Buchstabenh%C3%A4ufigkeit
+		// points by position of frequency
+
+		int points=0;
+		switch(c){
+		case'e':
+		case'n':
+		case'i':
+		case's': 
+			points = 1; 
+			break;
+		case'r':
+		case'a':
+		case't':
+		case'd':
+			points = 2; 
+			break;
+		case'h':
+		case'u':
+		case'l':
+		case'c':
+			points = 3; 
+			break;
+		case'g':
+		case'm':
+		case'o':
+		case'b':
+			points = 4; 
+			break;
+		case'w':
+		case'f':
+		case'k':
+		case'z':
+			points = 5;
+			break;
+		case'p':
+		case'v':
+		case'j':
+			points = 6;
+			break;
+		case'y':
+		case'x':
+		case'q':
+			points =7; 
+			break;
+		}
+
+
+
+		return points;
+	}
+
+	public int checkWord(String S){
+		int p =0 ; // if word doesnt exist : 0 points
+		boolean found = false;
+		for ( int i=0;i<dict.length &&!found ; i++){
+			// for(int i=340;i<390;i++){
+			// System.out.println(S );
+			//    System.out.println(i );
+			//    System.out.println(boardDictionary.dictionary[i] );
+			if (dict[i].equalsIgnoreCase(S)){
+				// if( boardDictionary.dictionary[i] == S){
+				p = calcWordPoints(dict[i]); ; // TODO calc points correctly!
+				found = true;
+			}
+		}
+
+
+		return p;
+	}
+
+	public int calcWordPoints(String S){
+		int p  =0 ;
+		char[] c = S.toCharArray();
+		for (int i=0;i<c.length;i++){
+			p+=pointsOf(c[i]);
+
+		}
+		return p;
+
+
+	}
 }
