@@ -27,13 +27,13 @@ public class leWords extends BasicGame {
 	static Image field_blank_correct = null;
 	static Image field_blank_wrong = null;
 	static Image field_blank_known = null;
-    static Font font; 
-    
-    Socket kkSocket = null;
-    PrintWriter out = null;
-    BufferedReader in = null;
-    DataInputStream dd = null;
-    DataOutputStream aa= null;
+	static Font font; 
+
+	Socket kkSocket = null;
+	PrintWriter out = null;
+	BufferedReader in = null;
+	DataInputStream dd = null;
+	DataOutputStream aa= null;
 	static TrueTypeFont ttFont;
 	static int fieldsize = 25;
 	static int dim = 5;
@@ -44,8 +44,9 @@ public class leWords extends BasicGame {
 	Vector <String>names;
 	Field selected;
 	Input input;
+	boolean alreadyIn;
 	String output;
-	
+
 	int mouseX;
 	int mouseY;
 	int score;
@@ -55,44 +56,44 @@ public class leWords extends BasicGame {
 	String[] dict;
 	String name;
 	ClientThread client;
-    public leWords() {
-        super("leWords");
-    }
-    
-    @Override
-    public void init(GameContainer container) throws SlickException {
-//Load the Fonts
-    	font = new Font("Arial", Font.PLAIN, 36);
-    	ttFont =  new TrueTypeFont(font,true);
-    	output = new String("");
-    	//Set up the input
-    	input = container.getInput();
-    	mouseX = input.getMouseX();
-    	mouseY = input.getMouseY();
-    	selection = new Vector<Field>();
-    	latestWord = new Vector<Field>();
-    	history = new Vector<String>();
-    	names = new Vector<String>();
-    	score =0;
-    	fadeTimer =0;
+	public leWords() {
+		super("leWords");
+	}
 
-    	
-    	//Has to be AFTER initField()! (Danger of being out of synch with the server else!
-    	
+	@Override
+	public void init(GameContainer container) throws SlickException {
+		//Load the Fonts
+		font = new Font("Arial", Font.PLAIN, 36);
+		ttFont =  new TrueTypeFont(font,true);
+		output = new String("");
+		//Set up the input
+		input = container.getInput();
+		mouseX = input.getMouseX();
+		mouseY = input.getMouseY();
+		selection = new Vector<Field>();
+		latestWord = new Vector<Field>();
+		history = new Vector<String>();
+		names = new Vector<String>();
+		score =0;
+		fadeTimer =0;
 
-    	openConnection();
-    	
-        //getName and send it to the server
-    	try {
-    		FileInputStream fstream = new FileInputStream("cfg/config.cfg");
+
+		//Has to be AFTER initField()! (Danger of being out of synch with the server else!
+
+
+		openConnection();
+
+		//getName and send it to the server
+		try {
+			FileInputStream fstream = new FileInputStream("cfg/config.cfg");
 			DataInputStream fin = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(fin));
 			name = br.readLine();
 			aa.writeInt(name.length());
 			for(int i =0; i < name.length(); i++)
-			aa.writeChar(name.charAt(i));
+				aa.writeChar(name.charAt(i));
 
-			
+
 		} catch (FileNotFoundException e) {
 			System.out.println("confing.cfg is missing");
 			e.printStackTrace();
@@ -100,186 +101,203 @@ public class leWords extends BasicGame {
 			System.out.println("could read config.cfg");
 			e.printStackTrace();
 		}
-    	
-    	loadTextures();
-    	InitField();
-    	client.start();
-    	
-    	
-    }
 
-    @Override
-    public void update(GameContainer container, int delta)
-            throws SlickException {
-    	
-    	//Update mouse position
-    	mouseX = input.getMouseX();
-    	mouseY = input.getMouseY();
-    	//Update other clients data
-    	//names.clear();
-    	//names = client.names;
-    	
-    	if(input.isMouseButtonDown(0))
-    	{	
-    	//Update the fields
-    		for(int i =0; i < dim; i++)
-        	{
-        		for(int j =0; j < dim; j++)
-        	{
-    			if(field[i][j].update(mouseX, mouseY))
-    			{
-    				if(field[i][j].selected == false)
-    				{	
-    					//Check adjacent fields
-    					if(selected == null)
-    					{
-    					field[i][j].selected = true;
-    					selected = field[i][j];
-    					selection.add(field[i][j]);
-    					output += field[i][j].c;
-    					}
-    					else if(field[i][j].neighbours.contains(selected))
-    					{
-    						field[i][j].selected = true;
-        					selected = field[i][j];
-        					selection.add(field[i][j]);
-        					output += field[i][j].c;
-    					}
-    				}
-    				else if(field[i][j].neighbours.contains(selected))
-    				{
-    					selected.selected =false;
-    					selection.remove(selected);
-    					field[i][j].selected = true;
-    					selected = field[i][j];
-    					output = output.substring(0,output.length()-1);
-    				}
-    				
-    			}
-    		
-    		}
-        	}
-    	}
-    	else if(selection.size()>0)
-    	{
-    		for(int i =0; i < selection.size();i++)
-    		{
-    			selection.elementAt(i).selected=false;
-    		}
+		loadTextures();
+		InitField();
+		client.start();
 
-    		latestWord = (Vector<Field>)selection.clone();
-    		selection.clear();
-    		selected = null;
-    		fadeTimer = 1.5f;
-    		
-    		if(!history.contains(output))
-    		{
-    		int points = checkWord(output);
-    		if(points >0)
-    		{
-    		history.add(output);
-    		score+=points;
-    		latestWordState = 1;
-    		}
-    		else
-    		{
-    			latestWordState =0;
-    		}
-    		}
-    		else
-    		{
-    			latestWordState = 2;
-    			
-    		}
-    		output = "";
-    	    		
-    	}
-    	
-    	
-    	
-    }
 
-    @Override
-    public void render(GameContainer container, Graphics g)
-            throws SlickException {
-    	//Draw Textures
-    	bg.draw(0,0);
-    	//Draw Fields
-    	//Adjust fadeTimer
-    	if(fadeTimer >0)
-    		fadeTimer -=0.001;
-    	else
-    		latestWord.clear();
-    	
-    	for(int i =0; i < dim; i++)
-    	{
-    		for(int j =0; j < dim; j++)
-    	{
-    			//Draw all the background tiles
-    			field_blank.draw(field[i][j].x, field[i][j].y);
-        		ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);	
-        		
-    		if(field[i][j].selected == true)
-    		{
-    			field_blank_selected.draw(field[i][j].x, field[i][j].y);
-        		ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);
+	}
 
-    		}
-    		else if(fadeTimer > 0 && latestWord.contains(field[i][j]) )
-    		{
-    			switch(latestWordState)
-    			{
-    			case 0: 
-    				field_blank_wrong.setAlpha(fadeTimer);
-        			field_blank_wrong.draw(field[i][j].x, field[i][j].y);
-        			break;
-    			case 1:
-    				field_blank_correct.setAlpha(fadeTimer);
-    				field_blank_correct.draw(field[i][j].x, field[i][j].y);
-    				break;
-    			case 2:
-    				field_blank_known.setAlpha(fadeTimer);
-    				field_blank_known.draw(field[i][j].x, field[i][j].y);
-    				break;
-    			}
-    			ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);
-    			
-    		}
-    		//else
-    		//{
-    	//		field_blank.draw(field[i][j].x, field[i][j].y);
-        //		ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);	
-    		//}
-    		
-    	}
-    	}
-    	
-    	//Draw other player names:
-    	for(int i =0; i < names.size(); i++)
-    		ttFont.drawString(500,100+i*32,names.elementAt(i));
-    	
-    	ttFont.drawString(500, 400, output, Color.white);
-    	ttFont.drawString(100,450,String.valueOf(score), Color.white);
-    	ttFont.drawString(200,450,String.valueOf(client.players), Color.white);
-    	
-    }
-    
-    public void InitField()
-    {
-    	
-    	//Getting the data from the server:
-    	try {
+	@Override
+	public void update(GameContainer container, int delta)
+			throws SlickException {
 
-    		dim= dd.readInt();
+		//Update mouse position
+		mouseX = input.getMouseX();
+		mouseY = input.getMouseY();
+		//Update other clients data
+		//names.clear();
+		//names = client.names;
+
+		if(input.isMouseButtonDown(0))
+		{	
+			//Update the fields
+			for(int i =0; i < dim; i++)
+			{
+				for(int j =0; j < dim; j++)
+				{
+					if(field[i][j].update(mouseX, mouseY))
+					{
+						if(field[i][j].selected == false)
+						{	
+							//Check adjacent fields
+							if(selected == null)
+							{
+								field[i][j].selected = true;
+								selected = field[i][j];
+								selection.add(field[i][j]);
+								output += field[i][j].c;
+							}
+							else if(field[i][j].neighbours.contains(selected))
+							{
+								field[i][j].selected = true;
+								selected = field[i][j];
+								selection.add(field[i][j]);
+								output += field[i][j].c;
+							}
+						}
+						else if(field[i][j].neighbours.contains(selected))
+						{
+							selected.selected =false;
+							selection.remove(selected);
+							field[i][j].selected = true;
+							selected = field[i][j];
+							output = output.substring(0,output.length()-1);
+						}
+
+					}
+
+				}
+			}
+		}
+		else if(selection.size()>0)
+		{
+			for(int i =0; i < selection.size();i++)
+			{
+				selection.elementAt(i).selected=false;
+			}
+
+			latestWord = (Vector<Field>)selection.clone();
+			selection.clear();
+			selected = null;
+			fadeTimer = 1.5f;
+
+			if(!history.contains(output))
+			{
+				int points = checkWord(output);
+				if(points >0)
+				{
+					history.add(output);
+					score+=points;
+					latestWordState = 1;
+					alreadyIn = false;
+				}
+				else
+				{
+					latestWordState =0;
+				}
+			}
+			else
+			{
+				latestWordState = 2;
+				alreadyIn = true;
+
+			}
+			output = "";
+
+		}
+
+
+
+	}
+
+	@Override
+	public void render(GameContainer container, Graphics g)
+			throws SlickException {
+		//Draw Textures
+		bg.draw(0,0);
+		//Draw Fields
+		//Adjust fadeTimer
+		if(fadeTimer >0)
+			fadeTimer -=0.001;
+		else
+			latestWord.clear();
+
+		for(int i =0; i < dim; i++)
+		{
+			for(int j =0; j < dim; j++)
+			{
+				//Draw all the background tiles
+				field_blank.draw(field[i][j].x, field[i][j].y);
+				ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);	
+
+				if(field[i][j].selected == true)
+				{
+					field_blank_selected.draw(field[i][j].x, field[i][j].y);
+					ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);
+
+				}
+				else if(fadeTimer > 0 && latestWord.contains(field[i][j]) )
+				{
+					switch(latestWordState)
+					{
+					case 0: 
+						field_blank_wrong.setAlpha(fadeTimer);
+						field_blank_wrong.draw(field[i][j].x, field[i][j].y);
+						break;
+					case 1:
+						field_blank_correct.setAlpha(fadeTimer);
+						field_blank_correct.draw(field[i][j].x, field[i][j].y);
+						break;
+					case 2:
+						field_blank_known.setAlpha(fadeTimer);
+						field_blank_known.draw(field[i][j].x, field[i][j].y);
+						break;
+					}
+					ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);
+
+				}
+				//else
+				//{
+				//		field_blank.draw(field[i][j].x, field[i][j].y);
+				//		ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);	
+				//}
+
+			}
+		}
+
+		//Draw other player names:
+		for(int i =0; i < names.size(); i++)
+			ttFont.drawString(500,100+i*32,names.elementAt(i));
+
+		if (output!="" ){
+			if (!alreadyIn){
+				ttFont.drawString(500, 350, "Du wählst:", Color.white);
+				ttFont.drawString(500, 400, output, Color.white);
+				ttFont.drawString(500, 450, "für "+ calcWordPoints(output)+ " Punkte.", Color.white);
+			}else{
+				ttFont.drawString(500, 400, output+ " hattest du leider schon.", Color.white);
+			}
+		}
+		if (alreadyIn){
+			ttFont.drawString(500, 400, "Wiederholung!", Color.white);
+		}
+
+		
+
+
+		ttFont.drawString(100,450,"Punkte: "+String.valueOf(score), Color.white);
+		ttFont.drawString(100,500,"Anzahl Spieler: "+String.valueOf(client.players), Color.white);
+
+	}
+
+	public void InitField()
+	{
+
+		//Getting the data from the server:
+		try {
+
+			dim= dd.readInt();
 
 			letters = new char[dim][dim];
 			for(int i =0; i < dim; i++)
-	    	{
-	    		for(int j =0; j < dim; j++)
-	    		{
-	    			letters[i][j] = dd.readChar();
-	    		}
-	    	}
+			{
+				for(int j =0; j < dim; j++)
+				{
+					letters[i][j] = dd.readChar();
+				}
+			}
 			//Getting the dictionary
 			int dictSize = dd.readInt();
 			System.out.println(dictSize);
@@ -290,70 +308,70 @@ public class leWords extends BasicGame {
 				int tmp = dd.readInt();
 				for(int j =0; j < tmp; j++)
 					word+=dd.readChar();
-				
+
 				dict[i] = word;
 				word = "";
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}    	
-    	
-    field = new Field[dim][dim];
-    int k =0;
-    	for(int i =0; i < dim; i++)
-    	{
-    		for(int j =0; j < dim; j++)
-    	{
-    	field[i][j] = new Field(74+j*(64+8), 68+i*(64+8),i,j,letters[i][j]);
-    	k++;
-    	}
-    	}
-    	for(int i =0; i < dim; i++)
-    	{
-    		for(int j =0; j < dim; j++)
-    	{
-    	if(i-1>=0&&j-1>=0)
-    		field[i][j].neighbours.add(field[i-1][j-1]);
-    	if(j-1>=0)
-    		field[i][j].neighbours.add(field[i][j-1]);
-    	if(j-1>=0&& i+1<dim)
-    		field[i][j].neighbours.add(field[i+1][j-1]);
-    	if(i-1>=0)
-    		field[i][j].neighbours.add(field[i-1][j]);
-    	if(i+1<dim)
-    		field[i][j].neighbours.add(field[i+1][j]);
-    	if(j+1<dim)
-    		field[i][j].neighbours.add(field[i][j+1]);
-    	if(j+1<dim&&i-1 >=0)
-    		field[i][j].neighbours.add(field[i-1][j+1]);
-    	if(j+1<dim&& i+1<dim)
-    		field[i][j].neighbours.add(field[i+1][j+1]);
-    	}
-    	}
-    }
-    public void openConnection()
-    {
-        try {
-            //kkSocket = new Socket("217.94.0.124", 5222);
-        	kkSocket = new Socket("127.0.0.1", 5222);
-            
-        	client = new ClientThread(kkSocket);
-            out = new PrintWriter(kkSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));
-            dd = new DataInputStream(kkSocket.getInputStream());
-            aa = new DataOutputStream(kkSocket.getOutputStream());
-            
-        } catch (UnknownHostException e) {
-            System.err.println("Don't know about host: taranis.");
-          //  System.exit(1);
-        } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to: taranis.");
-          //  System.exit(1);
-        }
-    }
-    
-    /*
+
+		field = new Field[dim][dim];
+		int k =0;
+		for(int i =0; i < dim; i++)
+		{
+			for(int j =0; j < dim; j++)
+			{
+				field[i][j] = new Field(74+j*(64+8), 68+i*(64+8),i,j,letters[i][j]);
+				k++;
+			}
+		}
+		for(int i =0; i < dim; i++)
+		{
+			for(int j =0; j < dim; j++)
+			{
+				if(i-1>=0&&j-1>=0)
+					field[i][j].neighbours.add(field[i-1][j-1]);
+				if(j-1>=0)
+					field[i][j].neighbours.add(field[i][j-1]);
+				if(j-1>=0&& i+1<dim)
+					field[i][j].neighbours.add(field[i+1][j-1]);
+				if(i-1>=0)
+					field[i][j].neighbours.add(field[i-1][j]);
+				if(i+1<dim)
+					field[i][j].neighbours.add(field[i+1][j]);
+				if(j+1<dim)
+					field[i][j].neighbours.add(field[i][j+1]);
+				if(j+1<dim&&i-1 >=0)
+					field[i][j].neighbours.add(field[i-1][j+1]);
+				if(j+1<dim&& i+1<dim)
+					field[i][j].neighbours.add(field[i+1][j+1]);
+			}
+		}
+	}
+	public void openConnection()
+	{
+		try {
+			//kkSocket = new Socket("217.94.0.124", 5222);
+			kkSocket = new Socket("127.0.0.1", 5222);
+
+			client = new ClientThread(kkSocket);
+			out = new PrintWriter(kkSocket.getOutputStream(), true);
+			in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));
+			dd = new DataInputStream(kkSocket.getInputStream());
+			aa = new DataOutputStream(kkSocket.getOutputStream());
+
+		} catch (UnknownHostException e) {
+			System.err.println("Don't know about host: taranis.");
+			//  System.exit(1);
+		} catch (IOException e) {
+			System.err.println("Couldn't get I/O for the connection to: taranis.");
+			//  System.exit(1);
+		}
+	}
+
+	/*
     public int checkWord(String word)
     {
     	for(int i =0; i < dict.length; i++)
@@ -361,36 +379,36 @@ public class leWords extends BasicGame {
     		if(dict[i].equals(word))
     			return 1;
     		//Include clever Point mechanism here!
-    		
+
     	}
 		return 0;
-    	
-    }*/
-    public static void loadTextures()
-     throws SlickException
-    {
-    	bg = new Image("images/background.png");
-    	field_blank = new Image("images/field_blank.png");
-    	field_blank_selected = new Image("images/field_blank_selected.png");
-    	field_blank_correct = new Image("images/field_blank_correct.png");
-    	field_blank_wrong = new Image("images/field_blank_wrong.png");
-    	field_blank_known = new Image("images/field_blank_known.png"); 
-    }
 
-    public static void main(String[] args) {
-    	
-    	System.setProperty("org.lwjgl.librarypath", new File(new File(System.getProperty("user.dir"), "native"), LWJGLUtil.getPlatformName()).getAbsolutePath());
-    	System.setProperty("net.java.games.input.librarypath", System.getProperty("org.lwjgl.librarypath"));
-    	
-        try {
-            AppGameContainer app = new AppGameContainer(new leWords());
-            app.setDisplayMode(800,600,false);
-            app.start();
-        } catch (SlickException e) {
-            e.printStackTrace();
-        }
-    }
-    
+    }*/
+	public static void loadTextures()
+			throws SlickException
+			{
+		bg = new Image("images/background.png");
+		field_blank = new Image("images/field_blank.png");
+		field_blank_selected = new Image("images/field_blank_selected.png");
+		field_blank_correct = new Image("images/field_blank_correct.png");
+		field_blank_wrong = new Image("images/field_blank_wrong.png");
+		field_blank_known = new Image("images/field_blank_known.png"); 
+			}
+
+	public static void main(String[] args) {
+
+		System.setProperty("org.lwjgl.librarypath", new File(new File(System.getProperty("user.dir"), "native"), LWJGLUtil.getPlatformName()).getAbsolutePath());
+		System.setProperty("net.java.games.input.librarypath", System.getProperty("org.lwjgl.librarypath"));
+
+		try {
+			AppGameContainer app = new AppGameContainer(new leWords());
+			app.setDisplayMode(800,600,false);
+			app.start();
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public int pointsOf(char c){
 		// this is heuristic
 		// see http://de.wikipedia.org/wiki/Buchstabenh%C3%A4ufigkeit
