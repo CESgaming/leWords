@@ -180,6 +180,7 @@ public class leWords extends BasicGame {
 				{
 					history.add(output);
 					score+=points;
+					client.score = score;
 					latestWordState = 1;
 					alreadyIn = false;
 				}
@@ -207,6 +208,7 @@ public class leWords extends BasicGame {
 			throws SlickException {
 		//Draw Textures
 		bg.draw(0,0);
+		
 		//Draw Fields
 		//Adjust fadeTimer
 		if(fadeTimer >0)
@@ -248,24 +250,29 @@ public class leWords extends BasicGame {
 					ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c).toUpperCase(), Color.black);
 
 				}
-				//else
-				//{
-				//		field_blank.draw(field[i][j].x, field[i][j].y);
-				//		ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c), Color.black);	
-				//}
-
 			}
 		}
 
 		//Draw other player names:
-		for(int i =0; i < names.size(); i++)
-			ttFont.drawString(500,100+i*32,names.elementAt(i));
+		int overflow = client.clients.size();
+		for(int i =0; i <overflow ; i++)
+		{
+			overflow = client.clients.size();
+			ttFont.drawString(500,100+i*48,client.clients.elementAt(i).name);
+			ttFont.drawString(450,100+i*48,String.valueOf(client.clients.elementAt(i).points));
+		}
 
 		if (output!="" ){
 			if (!alreadyIn){
+<<<<<<< HEAD
 				ttFont.drawString(100, 500, "Du wÃ¤hlst:", Color.black);
 				ttFont.drawString(300, 500, output.toUpperCase(), Color.black);
 				ttFont.drawString(100, 550, "fÃ¼r "+ calcWordPoints(output)+ " Punkte.", Color.black);
+=======
+				ttFont.drawString(500, 350, "Du wählst:", Color.white);
+				ttFont.drawString(500, 400, output, Color.white);
+				ttFont.drawString(500, 450, "für "+ calcWordPoints(output)+ " Punkte.", Color.white);
+>>>>>>> 0c620c7fa609d34e77a592d82975878d3f362488
 			}
 		}
 		if (alreadyIn && output==""){
@@ -281,6 +288,7 @@ public class leWords extends BasicGame {
 		ttFont.drawString(100,00,"Punkte: "+String.valueOf(score), Color.black);
 		ttFont.drawString(450,00,"Anzahl Spieler: "+String.valueOf(client.players), Color.black);
 
+<<<<<<< HEAD
 		// Edit thomas here: display your 10 last words;
 		int to = 10;
 		if (history.size()<10){
@@ -293,6 +301,11 @@ public class leWords extends BasicGame {
 			ttFont.drawString(450,100+i*50,"#"+(history.size()-i) +": "+history.get(pos).toUpperCase() , Color.black);
 			
 		}
+=======
+		ttFont.drawString(100,450,"Punkte: "+String.valueOf(score), Color.white);
+		ttFont.drawString(100,500,"Anzahl Spieler: "+String.valueOf(client.clients.size()), Color.white);
+
+>>>>>>> 0c620c7fa609d34e77a592d82975878d3f362488
 	}
 
 	public void InitField()
@@ -313,7 +326,6 @@ public class leWords extends BasicGame {
 			}
 			//Getting the dictionary
 			int dictSize = dd.readInt();
-			System.out.println(dictSize);
 			dict = new String[dictSize];
 			String word = "";
 			for(int i =0; i < dictSize; i++)
@@ -384,19 +396,6 @@ public class leWords extends BasicGame {
 		}
 	}
 
-	/*
-    public int checkWord(String word)
-    {
-    	for(int i =0; i < dict.length; i++)
-    	{
-    		if(dict[i].equals(word))
-    			return 1;
-    		//Include clever Point mechanism here!
-
-    	}
-		return 0;
-
-    }*/
 	public static void loadTextures()
 			throws SlickException
 			{
