@@ -1,4 +1,4 @@
-//package slick.leWords;
+package slick.leWords;
 
 import java.util.Vector;
 
