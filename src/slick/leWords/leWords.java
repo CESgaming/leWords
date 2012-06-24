@@ -17,7 +17,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.AppGameContainer;
 import java.io.*;
 import java.net.*;
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "deprecation", "unused" })
 public class leWords extends BasicGame {
 
 	//Declaring images
@@ -109,6 +109,7 @@ public class leWords extends BasicGame {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
@@ -333,13 +334,13 @@ public class leWords extends BasicGame {
 		}    	
 
 		field = new Field[dim][dim];
-		int k =0;
+	
 		for(int i =0; i < dim; i++)
 		{
 			for(int j =0; j < dim; j++)
 			{
 				field[i][j] = new Field(74+j*(64+8), 68+i*(64+8),i,j,letters[i][j]);
-				k++;
+			
 			}
 		}
 		for(int i =0; i < dim; i++)
@@ -369,7 +370,7 @@ public class leWords extends BasicGame {
 	{
 		try {
 			//kkSocket = new Socket("217.94.0.124", 5222);
-			kkSocket = new Socket("127.0.0.1", 5222);
+			kkSocket = new Socket("77.11.60.83", 5222);
 
 			client = new ClientThread(kkSocket);
 			out = new PrintWriter(kkSocket.getOutputStream(), true);
@@ -476,7 +477,7 @@ public class leWords extends BasicGame {
 			//    System.out.println(boardDictionary.dictionary[i] );
 			if (dict[i].equalsIgnoreCase(S)){
 				// if( boardDictionary.dictionary[i] == S){
-				p = calcWordPoints(dict[i]); ; // TODO calc points correctly!
+				p = calcWordPoints(dict[i]); 
 				found = true;
 			}
 		}
