@@ -266,12 +266,13 @@ public class leWords extends BasicGame {
 				ttFont.drawString(500, 350, "Du wählst:", Color.white);
 				ttFont.drawString(500, 400, output, Color.white);
 				ttFont.drawString(500, 450, "für "+ calcWordPoints(output)+ " Punkte.", Color.white);
-			}else{
-				ttFont.drawString(500, 400, output+ " hattest du leider schon.", Color.white);
 			}
 		}
-		if (alreadyIn){
+		if (alreadyIn && output==""){
 			ttFont.drawString(500, 400, "Wiederholung!", Color.white);
+		}
+		if (alreadyIn && output!=""){
+			alreadyIn = false;
 		}
 
 		
