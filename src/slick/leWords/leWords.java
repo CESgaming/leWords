@@ -264,15 +264,10 @@ public class leWords extends BasicGame {
 
 		if (output!="" ){
 			if (!alreadyIn){
-<<<<<<< HEAD
 				ttFont.drawString(100, 500, "Du wÃ¤hlst:", Color.black);
 				ttFont.drawString(300, 500, output.toUpperCase(), Color.black);
 				ttFont.drawString(100, 550, "fÃ¼r "+ calcWordPoints(output)+ " Punkte.", Color.black);
-=======
-				ttFont.drawString(500, 350, "Du wählst:", Color.white);
-				ttFont.drawString(500, 400, output, Color.white);
-				ttFont.drawString(500, 450, "für "+ calcWordPoints(output)+ " Punkte.", Color.white);
->>>>>>> 0c620c7fa609d34e77a592d82975878d3f362488
+
 			}
 		}
 		if (alreadyIn && output==""){
@@ -288,7 +283,6 @@ public class leWords extends BasicGame {
 		ttFont.drawString(100,00,"Punkte: "+String.valueOf(score), Color.black);
 		ttFont.drawString(450,00,"Anzahl Spieler: "+String.valueOf(client.players), Color.black);
 
-<<<<<<< HEAD
 		// Edit thomas here: display your 10 last words;
 		int to = 10;
 		if (history.size()<10){
@@ -301,11 +295,7 @@ public class leWords extends BasicGame {
 			ttFont.drawString(450,100+i*50,"#"+(history.size()-i) +": "+history.get(pos).toUpperCase() , Color.black);
 			
 		}
-=======
-		ttFont.drawString(100,450,"Punkte: "+String.valueOf(score), Color.white);
-		ttFont.drawString(100,500,"Anzahl Spieler: "+String.valueOf(client.clients.size()), Color.white);
 
->>>>>>> 0c620c7fa609d34e77a592d82975878d3f362488
 	}
 
 	public void InitField()
