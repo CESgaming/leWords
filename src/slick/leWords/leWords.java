@@ -263,13 +263,13 @@ public class leWords extends BasicGame {
 
 		if (output!="" ){
 			if (!alreadyIn){
-				ttFont.drawString(500, 350, "Du wählst:", Color.white);
-				ttFont.drawString(500, 400, output, Color.white);
-				ttFont.drawString(500, 450, "für "+ calcWordPoints(output)+ " Punkte.", Color.white);
+				ttFont.drawString(100, 500, "Du wählst:", Color.black);
+				ttFont.drawString(300, 500, output, Color.black);
+				ttFont.drawString(100, 550, "für "+ calcWordPoints(output)+ " Punkte.", Color.black);
 			}
 		}
 		if (alreadyIn && output==""){
-			ttFont.drawString(500, 400, "Wiederholung!", Color.white);
+			ttFont.drawString(100, 500, "Wiederholung!", Color.black);
 		}
 		if (alreadyIn && output!=""){
 			alreadyIn = false;
@@ -278,8 +278,8 @@ public class leWords extends BasicGame {
 		
 
 
-		ttFont.drawString(100,450,"Punkte: "+String.valueOf(score), Color.white);
-		ttFont.drawString(100,500,"Anzahl Spieler: "+String.valueOf(client.players), Color.white);
+		ttFont.drawString(100,00,"Punkte: "+String.valueOf(score), Color.black);
+		ttFont.drawString(450,00,"Anzahl Spieler: "+String.valueOf(client.players), Color.black);
 
 	}
 
@@ -388,7 +388,8 @@ public class leWords extends BasicGame {
 	public static void loadTextures()
 			throws SlickException
 			{
-		bg = new Image("images/background.png");
+		bg = new Image("images/background2.png");
+		
 		field_blank = new Image("images/field_blank.png");
 		field_blank_selected = new Image("images/field_blank_selected.png");
 		field_blank_correct = new Image("images/field_blank_correct.png");
