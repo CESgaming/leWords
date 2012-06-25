@@ -44,6 +44,7 @@ public class leWords extends BasicGame {
 	Vector <String>names;
 	Field selected;
 	Input input;
+	boolean newestBoardRead = true;
 	boolean alreadyIn;
 	String output;
 
@@ -103,7 +104,8 @@ public class leWords extends BasicGame {
 		}
 
 		loadTextures();
-		InitField();
+		DummyField();
+		//InitField();
 		client.start();
 
 
@@ -120,7 +122,12 @@ public class leWords extends BasicGame {
 		//Update other clients data
 		//names.clear();
 		//names = client.names;
-
+		//Check if the round is over and the board gets reshuffled:
+		if(client.hasNewBoard)
+		{
+			InitField();
+			client.hasNewBoard = false;
+		}
 		if(input.isMouseButtonDown(0))
 		{	
 			//Update the fields
@@ -277,6 +284,7 @@ public class leWords extends BasicGame {
 		if (alreadyIn && output!=""){
 			alreadyIn = false;
 		}
+		ttFont.drawString(50,50,String.valueOf(client.time));
 
 		
 
@@ -299,39 +307,39 @@ public class leWords extends BasicGame {
 
 	}
 
+	public void DummyField()
+	{
+		dim = 5;
+		letters = new char[dim][dim];
+		for(int i =0; i < dim; i++)
+		{
+			for(int j =0; j < dim; j++)
+			{
+				letters[i][j] = 'x';
+			}
+		}
+		//Getting the dictionary
+		int dictSize = 0;
+		dict = new String[dictSize];
+		
+	field = new Field[dim][dim];
+
+	for(int i =0; i < dim; i++)
+	{
+		for(int j =0; j < dim; j++)
+		{
+			field[i][j] = new Field(74+j*(64+8), 68+i*(64+8),i,j,letters[i][j]);
+		
+		}
+	}
+	}
+	
 	public void InitField()
 	{
-
-		//Getting the data from the server:
-		try {
-
-			dim= dd.readInt();
-
-			letters = new char[dim][dim];
-			for(int i =0; i < dim; i++)
-			{
-				for(int j =0; j < dim; j++)
-				{
-					letters[i][j] = dd.readChar();
-				}
-			}
-			//Getting the dictionary
-			int dictSize = dd.readInt();
-			dict = new String[dictSize];
-			String word = "";
-			for(int i =0; i < dictSize; i++)
-			{
-				int tmp = dd.readInt();
-				for(int j =0; j < tmp; j++)
-					word+=dd.readChar();
-
-				dict[i] = word;
-				word = "";
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}    	
+		dim = client.dim;
+		letters = client.letters;
+		dict = client.dict;
+		
 
 		field = new Field[dim][dim];
 	
@@ -365,12 +373,15 @@ public class leWords extends BasicGame {
 					field[i][j].neighbours.add(field[i+1][j+1]);
 			}
 		}
+		//Reset Score and Everything else
+		score =0;
+		history.clear();
 	}
 	public void openConnection()
 	{
 		try {
 			//kkSocket = new Socket("217.94.0.124", 5222);
-			kkSocket = new Socket("77.11.60.83", 5222);
+			kkSocket = new Socket("127.0.0.1", 5222);
 
 			client = new ClientThread(kkSocket);
 			out = new PrintWriter(kkSocket.getOutputStream(), true);
