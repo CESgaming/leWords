@@ -1,6 +1,7 @@
 package slick.leWords;
 
 import java.net.*;
+import java.util.Collections;
 import java.util.Vector;
 import java.io.*;
 
@@ -29,6 +30,7 @@ public class ClientThread extends Thread {
 	
 	public void run()
 	{
+			
 		try{
 			DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
 		    DataInputStream inStream = new DataInputStream(socket.getInputStream());
@@ -47,7 +49,6 @@ public class ClientThread extends Thread {
 		    		
 		    		//Getting the data from the server:
 		    		try {
-		    			System.out.println("WAITING FOR THE BOARD");
 		    			dim= inStream.readInt();
 
 		    			letters = new char[dim][dim];
@@ -77,7 +78,6 @@ public class ClientThread extends Thread {
 		    		} catch (IOException e) {
 		    			e.printStackTrace();
 		    		} 
-		    		
 		    		break;
 		    		
 		    	case 2:
@@ -86,7 +86,6 @@ public class ClientThread extends Thread {
 		    		clients.elementAt(i).connected = false;
 		    	//Send and receive meta data from server:
 		    	time = inStream.readInt();
-		    	
 		    	//Send points
 		    	outStream.writeInt(score);
 		    	//Receive number of players
@@ -139,6 +138,7 @@ public class ClientThread extends Thread {
 		    	for(int i =0; i < remove.size(); i++)
 		    		clients.remove(remove.elementAt(i));
 		    	remove.clear();
+		    	Collections.sort(clients);
 		    	break;
 		    }
 		    }

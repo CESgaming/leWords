@@ -2,6 +2,7 @@ package slick.leWords;
 import java.awt.Font;
 import java.io.*;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.Vector;
 
 import org.lwjgl.LWJGLUtil;
@@ -136,6 +137,9 @@ public class leWords extends BasicGame {
 			InitField();
 			client.hasNewBoard = false;
 		}
+		if(client.time>120)
+			return;
+		
 		if(input.isMouseButtonDown(0))
 		{	
 			//Update the fields
@@ -223,8 +227,27 @@ public class leWords extends BasicGame {
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
 		//Draw Textures
-		bg.draw(0,0);
+		//bg.draw(0,0);
 
+		//Show the score screen when the round is over:
+		if(client.time> 120)
+		{
+			int overflow = client.clients.size();
+			int upto=  10;
+			for(int i =0; i <upto && i< overflow ; i++)
+			{// TODO add client != me, I am no enemy for myself
+				// TODO display only the BEST enemies
+				overflow = client.clients.size();
+
+				//ttFont.drawString(450,100+i*48,String.valueOf(client.clients.elementAt(i).points));
+				tileStringPrint(client.clients.elementAt(i).name+ " "
+						+ String.valueOf(client.clients.elementAt(i).points),
+						350,i*30+150,9);
+				tileStringPrint(String.valueOf(20-(client.time-120)),466,50,9);
+			
+			}
+			return;
+		}
 
 		//Draw Fields
 		//Adjust fadeTimer
@@ -288,7 +311,7 @@ public class leWords extends BasicGame {
 		}
 		
 		if ((120-client.time ) <100){
-			// 2 digits, 466 is exactly above third ledder
+			// 2 digits, 466 is exactly above third latter
 		tileStringPrint(String.valueOf(120-client.time),466,50,9);
 		} else{
 		
@@ -333,7 +356,7 @@ public class leWords extends BasicGame {
 		for (int i=0;i<s.length();i++){
 			char c = s.charAt(i);
 			if (c != ' '){
-			int dx = 20;
+			int dx = 22;
 			
 			switch (p){
 			case 0:
@@ -354,6 +377,7 @@ public class leWords extends BasicGame {
 				field_blank_wrong.getScaledCopy(0.5f).draw(x+i*36, y);
 				ttFont.drawString(x+i*36+8, y-4, s.substring(i, i+1).toUpperCase(), Color.black);	
 				break;
+			
 			}
 			
 			}
