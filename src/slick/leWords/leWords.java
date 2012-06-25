@@ -274,9 +274,10 @@ public class leWords extends BasicGame {
 		if (output!="" ){
 			if (!alreadyIn){
 		
-				ttFont.drawString(350, 600, output.toUpperCase(), Color.white);
-				ttFont.drawString(350, 650, "für "+ calcWordPoints(output)+ " Punkte.", Color.white);
-
+			//	ttFont.drawString(350, 600, output.toUpperCase(), Color.white);
+			//	ttFont.drawString(350, 650, "für "+ calcWordPoints(output)+ " Punkte.", Color.white);
+				tileStringPrint(output.toUpperCase(),350,500,1);
+				tileStringPrint("gibt "+ calcWordPoints(output)+ " Punkte",350,550,1);
 			}
 		}
 		if (alreadyIn && output==""){
@@ -285,9 +286,14 @@ public class leWords extends BasicGame {
 		if (alreadyIn && output!=""){
 			alreadyIn = false;
 		}
-		tileStringPrint(String.valueOf(120-client.time),50,50,9);
-	//	ttFont.drawString(50,50,String.valueOf(client.time));
-
+		
+		if ((120-client.time ) <100){
+			// 2 digits, 466 is exactly above third ledder
+		tileStringPrint(String.valueOf(120-client.time),466,50,9);
+		} else{
+		
+			tileStringPrint(String.valueOf(120-client.time),452,50,9);
+		}
 
 
 		// Edit thomas here: display your 10 last words;
@@ -299,7 +305,7 @@ public class leWords extends BasicGame {
 		for (int i=0;i<to;i++){
 			// display last 5 words;
 			int pos = history.size()-1-i;
-			tileStringPrint(history.get(pos).toUpperCase(),450+xoffset,200+i*50,0);
+			tileStringPrint(history.get(pos).toUpperCase(),450+xoffset,200+i*30,0);
 
 
 		}
@@ -316,7 +322,7 @@ public class leWords extends BasicGame {
 			//ttFont.drawString(450,100+i*48,String.valueOf(client.clients.elementAt(i).points));
 			tileStringPrint(client.clients.elementAt(i).name+ " "
 					+ String.valueOf(client.clients.elementAt(i).points),
-					20,i*50+150,2);
+					20,i*30+150,2);
 		}
 
 
