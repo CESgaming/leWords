@@ -28,6 +28,8 @@ public class leWords extends BasicGame {
 	static Image field_blank_wrong = null;
 	static Image field_blank_known = null;
 	static Font font; 
+	static Font listfont; 
+
 
 	Socket kkSocket = null;
 	PrintWriter out = null;
@@ -35,6 +37,7 @@ public class leWords extends BasicGame {
 	DataInputStream dd = null;
 	DataOutputStream aa= null;
 	static TrueTypeFont ttFont;
+	static TrueTypeFont listFont;
 	static int fieldsize = 25;
 	static int dim = 5;
 	Field field[][];
@@ -47,7 +50,7 @@ public class leWords extends BasicGame {
 	boolean newestBoardRead = true;
 	boolean alreadyIn;
 	String output;
-
+	int xoffset, yoffset;
 	int mouseX;
 	int mouseY;
 	int score;
@@ -66,6 +69,9 @@ public class leWords extends BasicGame {
 		//Load the Fonts
 		font = new Font("Arial", Font.PLAIN, 36);
 		ttFont =  new TrueTypeFont(font,true);
+		listfont = new Font("Arial", Font.PLAIN, 16);
+		listFont =  new TrueTypeFont(listfont,true);
+
 		output = new String("");
 		//Set up the input
 		input = container.getInput();
@@ -77,6 +83,8 @@ public class leWords extends BasicGame {
 		names = new Vector<String>();
 		score =0;
 		fadeTimer =0;
+		xoffset = 250;
+		yoffset = 50;
 
 
 		//Has to be AFTER initField()! (Danger of being out of synch with the server else!
@@ -216,7 +224,8 @@ public class leWords extends BasicGame {
 			throws SlickException {
 		//Draw Textures
 		bg.draw(0,0);
-		
+
+
 		//Draw Fields
 		//Adjust fadeTimer
 		if(fadeTimer >0)
@@ -261,51 +270,93 @@ public class leWords extends BasicGame {
 			}
 		}
 
-		//Draw other player names:
-		int overflow = client.clients.size();
-		for(int i =0; i <overflow ; i++)
-		{
-			overflow = client.clients.size();
-			ttFont.drawString(500,100+i*48,client.clients.elementAt(i).name);
-			ttFont.drawString(450,100+i*48,String.valueOf(client.clients.elementAt(i).points));
-		}
 
 		if (output!="" ){
 			if (!alreadyIn){
-				ttFont.drawString(100, 500, "Du wählst:", Color.black);
-				ttFont.drawString(300, 500, output.toUpperCase(), Color.black);
-				ttFont.drawString(100, 550, "für "+ calcWordPoints(output)+ " Punkte.", Color.black);
+		
+				ttFont.drawString(350, 600, output.toUpperCase(), Color.white);
+				ttFont.drawString(350, 650, "für "+ calcWordPoints(output)+ " Punkte.", Color.white);
 
 			}
 		}
 		if (alreadyIn && output==""){
-			ttFont.drawString(100, 500, "Wiederholung!", Color.black);
+			ttFont.drawString(350, 600, "Wiederholung!", Color.white);
 		}
 		if (alreadyIn && output!=""){
 			alreadyIn = false;
 		}
-		ttFont.drawString(50,50,String.valueOf(client.time));
+		tileStringPrint(String.valueOf(120-client.time),50,50,9);
+	//	ttFont.drawString(50,50,String.valueOf(client.time));
 
-		
 
-	
-		ttFont.drawString(100,00,"Punkte: "+String.valueOf(score), Color.black);
-		ttFont.drawString(450,00,"Anzahl Spieler: "+String.valueOf(client.players), Color.black);
 
 		// Edit thomas here: display your 10 last words;
-		int to = 10;
-		if (history.size()<10){
+		int to = 15;
+		if (history.size()<to){
 			to = history.size();
 		}
+		tileStringPrint("Deine Treffer",450+xoffset,150,1);
 		for (int i=0;i<to;i++){
 			// display last 5 words;
 			int pos = history.size()-1-i;
-			
-			ttFont.drawString(450,100+i*50,"#"+(history.size()-i) +": "+history.get(pos).toUpperCase() , Color.black);
-			
+			tileStringPrint(history.get(pos).toUpperCase(),450+xoffset,200+i*50,0);
+
+
 		}
 
+
+		//Draw other player names:
+		int overflow = client.clients.size();
+		int upto=  10;
+		for(int i =0; i <upto && i< overflow ; i++)
+		{// TODO add client != me, I am no enemy for myself
+			// TODO display only the BEST enemies
+			overflow = client.clients.size();
+
+			//ttFont.drawString(450,100+i*48,String.valueOf(client.clients.elementAt(i).points));
+			tileStringPrint(client.clients.elementAt(i).name+ " "
+					+ String.valueOf(client.clients.elementAt(i).points),
+					20,i*50+150,2);
+		}
+
+
 	}
+
+	public void tileStringPrint(String s, int x, int y,int p){
+		float scale = 0.3f;
+		for (int i=0;i<s.length();i++){
+			char c = s.charAt(i);
+			if (c != ' '){
+			int dx = 20;
+			
+			switch (p){
+			case 0:
+
+				field_blank_known.getScaledCopy(scale).draw(x+i*dx, y);
+				listFont.drawString(x+i*dx+4, y, s.substring(i, i+1).toUpperCase(), Color.black);	
+				break;
+			case 1:
+				field_blank_correct.getScaledCopy(scale).draw(x+i*dx, y);
+				listFont.drawString(x+i*dx+4, y, s.substring(i, i+1).toUpperCase(), Color.black);	
+				break;
+
+			case 2:
+				field_blank_wrong.getScaledCopy(scale).draw(x+i*dx, y);
+				listFont.drawString(x+i*dx+4, y, s.substring(i, i+1).toUpperCase(), Color.black);	
+				break;
+			case 9: // only the time 
+				field_blank_wrong.getScaledCopy(0.5f).draw(x+i*36, y);
+				ttFont.drawString(x+i*36+8, y-4, s.substring(i, i+1).toUpperCase(), Color.black);	
+				break;
+			}
+			
+			}
+		}
+		
+
+	}
+
+
 
 	public void DummyField()
 	{
@@ -321,34 +372,36 @@ public class leWords extends BasicGame {
 		//Getting the dictionary
 		int dictSize = 0;
 		dict = new String[dictSize];
-		
-	field = new Field[dim][dim];
 
-	for(int i =0; i < dim; i++)
-	{
-		for(int j =0; j < dim; j++)
+		field = new Field[dim][dim];
+
+
+		for(int i =0; i < dim; i++)
 		{
-			field[i][j] = new Field(74+j*(64+8), 68+i*(64+8),i,j,letters[i][j]);
-		
+			for(int j =0; j < dim; j++)
+			{
+				field[i][j] = new Field(74+j*(64+8)+xoffset, 68+i*(64+8)+yoffset,i,j,letters[i][j]);
+
+			}
 		}
 	}
-	}
-	
+
 	public void InitField()
 	{
 		dim = client.dim;
 		letters = client.letters;
 		dict = client.dict;
-		
+
 
 		field = new Field[dim][dim];
-	
+
+
 		for(int i =0; i < dim; i++)
 		{
 			for(int j =0; j < dim; j++)
 			{
-				field[i][j] = new Field(74+j*(64+8), 68+i*(64+8),i,j,letters[i][j]);
-			
+				field[i][j] = new Field(74+j*(64+8)+xoffset, 68+i*(64+8)+yoffset,i,j,letters[i][j]);
+
 			}
 		}
 		for(int i =0; i < dim; i++)
@@ -401,8 +454,9 @@ public class leWords extends BasicGame {
 	public static void loadTextures()
 			throws SlickException
 			{
-		bg = new Image("images/background2.png");
-		
+		bg = new Image("images/background.png");
+		bg = bg.getScaledCopy(2);
+
 		field_blank = new Image("images/field_blank.png");
 		field_blank_selected = new Image("images/field_blank_selected.png");
 		field_blank_correct = new Image("images/field_blank_correct.png");
@@ -417,7 +471,7 @@ public class leWords extends BasicGame {
 
 		try {
 			AppGameContainer app = new AppGameContainer(new leWords());
-			app.setDisplayMode(800,600,false);
+			app.setDisplayMode(1024,768,false);
 			app.start();
 		} catch (SlickException e) {
 			e.printStackTrace();
