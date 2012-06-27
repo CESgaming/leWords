@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Vector;
 
 import org.lwjgl.LWJGLUtil;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
@@ -16,8 +17,12 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.gui.TextField;
+
 import java.io.*;
 import java.net.*;
+
+import javax.swing.JOptionPane;
 @SuppressWarnings({ "deprecation", "unused" })
 public class leWords extends BasicGame {
 
@@ -42,6 +47,8 @@ public class leWords extends BasicGame {
 	static int fieldsize = 25;
 	static int dim = 5;
 	Field field[][];
+	Field oButton;
+	Field kButton;
 	Vector <Field>selection;
 	Vector <Field>latestWord;
 	Vector <String>history;
@@ -50,16 +57,21 @@ public class leWords extends BasicGame {
 	Input input;
 	boolean newestBoardRead = true;
 	boolean alreadyIn;
+	boolean hasName = false;
+	boolean hasIP = false;
 	String output;
 	int xoffset, yoffset;
 	int mouseX;
 	int mouseY;
 	int score;
+	
+	TextField tf;
 	float fadeTimer;
 	int latestWordState=0;
 	char letters[][];
 	String[] dict;
-	String name;
+	String name = "";
+	String IP = "";
 	ClientThread client;
 	public leWords() {
 		super("leWords");
@@ -82,6 +94,14 @@ public class leWords extends BasicGame {
 		latestWord = new Vector<Field>();
 		history = new Vector<String>();
 		names = new Vector<String>();
+		oButton = new Field(510 ,600,0,0,'O');
+		kButton = new Field(530,600,0,0,'K');
+		tf = new TextField(container, ttFont, 350,400,400,100);
+		tf.setBackgroundColor(Color.black);
+		tf.setTextColor(Color.white);
+		tf.setFocus(true);
+		tf.setBorderColor(Color.black);
+		tf.setText("Please enter your Name");
 		score =0;
 		fadeTimer =0;
 		xoffset = 250;
@@ -91,31 +111,14 @@ public class leWords extends BasicGame {
 		//Has to be AFTER initField()! (Danger of being out of synch with the server else!
 
 
-		openConnection();
+		//openConnection();
 
 		//getName and send it to the server
-		try {
-			FileInputStream fstream = new FileInputStream("cfg/config.cfg");
-			DataInputStream fin = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(fin));
-			name = br.readLine();
-			aa.writeInt(name.length());
-			for(int i =0; i < name.length(); i++)
-				aa.writeChar(name.charAt(i));
-
-
-		} catch (FileNotFoundException e) {
-			System.out.println("confing.cfg is missing");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println("could read config.cfg");
-			e.printStackTrace();
-		}
-
+		
 		loadTextures();
-		DummyField();
+		//DummyField();
 		//InitField();
-		client.start();
+		//client.start();
 
 
 	}
@@ -125,9 +128,47 @@ public class leWords extends BasicGame {
 	public void update(GameContainer container, int delta)
 			throws SlickException {
 
-		//Update mouse position
 		mouseX = input.getMouseX();
 		mouseY = input.getMouseY();
+		
+		if( !hasName)
+		{
+			if(input.isMouseButtonDown(0)&&(oButton.update(mouseX,mouseY)|| kButton.update(mouseX, mouseY)) && !tf.getText().equals(""))
+			{
+				name = tf.getText();
+				hasName = true;
+				tf.setText("Please enter Server IP");
+				
+			}
+			return;
+				
+		}
+		if(!hasIP)
+		{
+			if(input.isMouseButtonDown(0)&&(oButton.update(mouseX,mouseY)|| kButton.update(mouseX, mouseY)) && (!tf.getText().equals("")) && !tf.getText().equals("Please enter Server IP"))
+			{
+				IP = tf.getText();
+				hasName = true;
+				hasIP = true;
+				openConnection();
+				try {
+					aa.writeInt(name.length());
+					for(int i =0; i < name.length(); i++)
+					aa.writeChar(name.charAt(i));
+					} catch (IOException e) {
+					
+					e.printStackTrace();
+				}
+					
+				DummyField();
+				client.start();
+				tf.deactivate();
+				
+			}
+			return;
+				
+		}
+		//Update mouse position
 		//Update other clients data
 		//names.clear();
 		//names = client.names;
@@ -228,7 +269,15 @@ public class leWords extends BasicGame {
 			throws SlickException {
 		//Draw Textures
 		//bg.draw(0,0);
-
+		if(!hasName || !hasIP )
+		{
+			field_blank_correct.draw(oButton.x,oButton.y);
+			field_blank_correct.draw(kButton.x,kButton.y);
+			ttFont.drawString(oButton.x, oButton.y, "Okay", Color.black);	
+			tf.render(container, g);
+			return;
+			
+		}
 		//Show the score screen when the round is over:
 		if(client.time> 120)
 		{
@@ -464,7 +513,7 @@ public class leWords extends BasicGame {
 	{
 		try {
 			//kkSocket = new Socket("217.94.0.124", 5222);
-			kkSocket = new Socket("127.0.0.1", 5222);
+			kkSocket = new Socket(IP, 5222);
 
 			client = new ClientThread(kkSocket);
 			out = new PrintWriter(kkSocket.getOutputStream(), true);
@@ -473,11 +522,9 @@ public class leWords extends BasicGame {
 			aa = new DataOutputStream(kkSocket.getOutputStream());
 
 		} catch (UnknownHostException e) {
-			System.err.println("Don't know about host: taranis.");
-			//  System.exit(1);
+			Sys.alert("Server error", "IP "+IP+" could not be resolved!");
 		} catch (IOException e) {
-			System.err.println("Couldn't get I/O for the connection to: taranis.");
-			//  System.exit(1);
+			Sys.alert("Server error", "Server on "+IP+" is not responding!");
 		}
 	}
 
