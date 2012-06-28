@@ -101,7 +101,7 @@ public class leWords extends BasicGame {
 		tf.setTextColor(Color.white);
 		tf.setFocus(true);
 		tf.setBorderColor(Color.black);
-		tf.setText("Please enter your Name");
+		tf.setText("");
 		score =0;
 		fadeTimer =0;
 		xoffset = 250;
@@ -130,14 +130,20 @@ public class leWords extends BasicGame {
 
 		mouseX = input.getMouseX();
 		mouseY = input.getMouseY();
-		
+	
 		if( !hasName)
 		{
+
+			
+		
 			if(input.isMouseButtonDown(0)&&(oButton.update(mouseX,mouseY)|| kButton.update(mouseX, mouseY)) && !tf.getText().equals(""))
 			{
+
 				name = tf.getText();
 				hasName = true;
-				tf.setText("Please enter Server IP");
+				
+				tf.setText("127.0.0.1");
+			
 				
 			}
 			return;
@@ -180,6 +186,7 @@ public class leWords extends BasicGame {
 		}
 		if(client.time>120)
 			return;
+	
 		
 		if(input.isMouseButtonDown(0))
 		{	
@@ -190,6 +197,7 @@ public class leWords extends BasicGame {
 				{
 					if(field[i][j].update(mouseX, mouseY))
 					{
+						
 						if(field[i][j].selected == false)
 						{	
 							//Check adjacent fields
@@ -200,7 +208,7 @@ public class leWords extends BasicGame {
 								selection.add(field[i][j]);
 								output += field[i][j].c;
 							}
-							else if(field[i][j].neighbours.contains(selected))
+							else if( field[i][j].neighbours.contains(selected))
 							{
 								field[i][j].selected = true;
 								selected = field[i][j];
@@ -208,13 +216,18 @@ public class leWords extends BasicGame {
 								output += field[i][j].c;
 							}
 						}
-						else if(field[i][j].neighbours.contains(selected))
-						{
+						
+						
+						else if(/*selection.elementAt(selection.size()-1).neighbours.contains(selected))*/field[i][j].neighbours.contains(selected) )
+						{ // thomas : bug occours ! you can only go back the LAST one in list, this is not the case
+							
 							selected.selected =false;
 							selection.remove(selected);
 							field[i][j].selected = true;
 							selected = field[i][j];
+							
 							output = output.substring(0,output.length()-1);
+							
 						}
 
 					}
@@ -271,13 +284,17 @@ public class leWords extends BasicGame {
 		//bg.draw(0,0);
 		if(!hasName || !hasIP )
 		{
+			String t = "Name eingeben.";
+			if (hasName) t = "IP eingeben.";
+			tileStringPrint(t ,400,300,1);
 			field_blank_correct.draw(oButton.x,oButton.y);
 			field_blank_correct.draw(kButton.x,kButton.y);
-			ttFont.drawString(oButton.x, oButton.y, "Okay", Color.black);	
+			ttFont.drawString(oButton.x, oButton.y, "Ok", Color.black);	
 			tf.render(container, g);
 			return;
 			
 		}
+		
 		//Show the score screen when the round is over:
 		if(client.time> 120)
 		{
@@ -359,12 +376,14 @@ public class leWords extends BasicGame {
 			alreadyIn = false;
 		}
 		
-		if ((120-client.time ) <100){
+		if ((120-client.time )>0){
 			// 2 digits, 466 is exactly above third latter
-		tileStringPrint(String.valueOf(120-client.time),466,50,9);
-		} else{
+		//	Color tc = new Color(255-255/60*(120-client.time),255/60*(120-client.time),0);
+			tileStringPrint(String.valueOf(120-client.time),466,50,2);
+			
+		//} else{
 		
-			tileStringPrint(String.valueOf(120-client.time),452,50,9);
+		//	tileStringPrint(String.valueOf(120-client.time),452,50,9);
 		}
 
 
@@ -397,6 +416,40 @@ public class leWords extends BasicGame {
 					20,i*30+150,2);
 		}
 
+
+	}
+	public void tileStringPrint(String s, int x, int y,int p,Color co){
+		float scale = 0.3f;
+		for (int i=0;i<s.length();i++){
+			char c = s.charAt(i);
+			if (c != ' '){
+			int dx = 22;
+			
+			switch (p){
+			case 0:
+
+				field_blank_known.getScaledCopy(scale).draw(x+i*dx, y);
+				listFont.drawString(x+i*dx+4, y, s.substring(i, i+1).toUpperCase(), co);	
+				break;
+			case 1:
+				field_blank_correct.getScaledCopy(scale).draw(x+i*dx, y);
+				listFont.drawString(x+i*dx+4, y, s.substring(i, i+1).toUpperCase(), co);	
+				break;
+
+			case 2:
+				field_blank_wrong.getScaledCopy(scale).draw(x+i*dx, y);
+				listFont.drawString(x+i*dx+4, y, s.substring(i, i+1).toUpperCase(), co);	
+				break;
+			case 9: // only the time 
+				field_blank_wrong.getScaledCopy(0.5f).draw(x+i*36, y);
+				ttFont.drawString(x+i*36+8, y-4, s.substring(i, i+1).toUpperCase(), co);	
+				break;
+			
+			}
+			
+			}
+		}
+		
 
 	}
 
@@ -445,7 +498,7 @@ public class leWords extends BasicGame {
 		{
 			for(int j =0; j < dim; j++)
 			{
-				letters[i][j] = 'x';
+				letters[i][j] = ' ';
 			}
 		}
 		//Getting the dictionary
