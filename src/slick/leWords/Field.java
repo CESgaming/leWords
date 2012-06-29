@@ -25,7 +25,9 @@ public class Field {
 	
 	public boolean checkIntersection(int mX, int mY)
 	{
-		if(mX > x+6 && mX < x+size-6 && mY >y+6 && mY < y+size-6)
+		int R;
+		R = 10;
+		if(mX > x+R && mX < x+size-R && mY >y+R && mY < y+size-R)
 			return true;
 		else
 		return false;

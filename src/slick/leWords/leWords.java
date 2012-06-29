@@ -22,6 +22,7 @@ import org.newdawn.slick.gui.TextField;
 import java.io.*;
 import java.net.*;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 @SuppressWarnings({ "deprecation", "unused" })
 public class leWords extends BasicGame {
@@ -35,6 +36,10 @@ public class leWords extends BasicGame {
 	static Image field_blank_known = null;
 	static Font font; 
 	static Font listfont; 
+	
+	static Font pointfont; 
+	
+	static TrueTypeFont pointFont;
 
 
 	Socket kkSocket = null;
@@ -85,6 +90,8 @@ public class leWords extends BasicGame {
 		listfont = new Font("Arial", Font.PLAIN, 16);
 		listFont =  new TrueTypeFont(listfont,true);
 
+		pointfont = new Font("Arial", Font.PLAIN,12);
+		pointFont = new TrueTypeFont(pointfont,true);
 		output = new String("");
 		//Set up the input
 		input = container.getInput();
@@ -101,7 +108,7 @@ public class leWords extends BasicGame {
 		tf.setTextColor(Color.white);
 		tf.setFocus(true);
 		tf.setBorderColor(Color.black);
-		tf.setText("");
+		tf.setText("thomas");
 		score =0;
 		fadeTimer =0;
 		xoffset = 250;
@@ -142,7 +149,7 @@ public class leWords extends BasicGame {
 				name = tf.getText();
 				hasName = true;
 				
-				tf.setText("127.0.0.1");
+				tf.setText("");
 			
 				
 			}
@@ -151,7 +158,7 @@ public class leWords extends BasicGame {
 		}
 		if(!hasIP)
 		{
-			if(input.isMouseButtonDown(0)&&(oButton.update(mouseX,mouseY)|| kButton.update(mouseX, mouseY)) && (!tf.getText().equals("")) && !tf.getText().equals("Please enter Server IP"))
+			if(input.isMouseButtonDown(0)&&(oButton.update(mouseX,mouseY)|| kButton.update(mouseX, mouseY)) && (!tf.getText().equals("")) && !tf.getText().equals(""))
 			{
 				IP = tf.getText();
 				hasName = true;
@@ -280,6 +287,10 @@ public class leWords extends BasicGame {
 	@Override
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
+		
+		
+
+	
 		//Draw Textures
 		//bg.draw(0,0);
 		if(!hasName || !hasIP )
@@ -329,31 +340,43 @@ public class leWords extends BasicGame {
 				//Draw all the background tiles
 				field_blank.draw(field[i][j].x, field[i][j].y);
 				ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c).toUpperCase(), Color.black);	
-
+				String s = " " +pointsOf(field[i][j].c);
+				pointFont.drawString(field[i][j].x+50, field[i][j].y+50, s);
 				if(field[i][j].selected == true)
 				{
 					field_blank_selected.draw(field[i][j].x, field[i][j].y);
 					ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c).toUpperCase(), Color.black);
+				//	 s = " " +pointsOf(field[i][j].c);
+				//	pointFont.drawString(field[i][j].x+30, field[i][j].y+20, s);
 
 				}
 				else if(fadeTimer > 0 && latestWord.contains(field[i][j]) )
 				{
+					 
 					switch(latestWordState)
 					{
 					case 0: 
 						field_blank_wrong.setAlpha(fadeTimer);
 						field_blank_wrong.draw(field[i][j].x, field[i][j].y);
+					//	 s = " " +pointsOf(field[i][j].c);
+					//	pointFont.drawString(field[i][j].x+30, field[i][j].y+20, s);
 						break;
 					case 1:
 						field_blank_correct.setAlpha(fadeTimer);
 						field_blank_correct.draw(field[i][j].x, field[i][j].y);
+					//	 s = " " +pointsOf(field[i][j].c);
+					//	pointFont.drawString(field[i][j].x+30, field[i][j].y+20, s);
 						break;
 					case 2:
 						field_blank_known.setAlpha(fadeTimer);
 						field_blank_known.draw(field[i][j].x, field[i][j].y);
+					//	 s = " " +pointsOf(field[i][j].c);
+					//	pointFont.drawString(field[i][j].x+30, field[i][j].y+20, s);
 						break;
 					}
 					ttFont.drawString(field[i][j].x+18, field[i][j].y+12, String.valueOf(field[i][j].c).toUpperCase(), Color.black);
+				//	 s = " " +pointsOf(field[i][j].c);
+				//	pointFont.drawString(field[i][j].x+30, field[i][j].y+20, s);
 
 				}
 			}
@@ -396,7 +419,11 @@ public class leWords extends BasicGame {
 		for (int i=0;i<to;i++){
 			// display last 5 words;
 			int pos = history.size()-1-i;
-			tileStringPrint(history.get(pos).toUpperCase(),450+xoffset,200+i*30,0);
+			if (calcWordPoints(history.get(pos))>9){
+			tileStringPrint( calcWordPoints(history.get(pos))+"  " +history.get(pos).toUpperCase(), 450+xoffset,200+i*30,0);
+			}else{ // one more space inserted
+				tileStringPrint( calcWordPoints(history.get(pos))+"   " +history.get(pos).toUpperCase(), 450+xoffset,200+i*30,0);
+			}
 
 
 		}
@@ -688,6 +715,7 @@ public class leWords extends BasicGame {
 			p+=pointsOf(c[i]);
 
 		}
+		p = p+c.length;
 		return p;
 
 
